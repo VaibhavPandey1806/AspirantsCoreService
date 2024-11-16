@@ -33,8 +33,9 @@ public class SpringSecurity {
 		return http.authorizeHttpRequests(request -> request
 						.requestMatchers(new MvcRequestMatcher(introspector, "/public/**")).permitAll()
 						.anyRequest().authenticated())
-				.httpBasic(Customizer.withDefaults())
+//				.httpBasic(Customizer.withDefaults())
 				.csrf(AbstractHttpConfigurer::disable)
+				.oauth2Login(oauth2 -> oauth2.defaultSuccessUrl("http://localhost:3000", true))
 				.build();
 	}
 
