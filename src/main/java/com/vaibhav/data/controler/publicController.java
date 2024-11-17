@@ -2,11 +2,15 @@ package com.vaibhav.data.controler;
 
 
 import com.vaibhav.data.dao.User;
+import com.vaibhav.data.dto.LoginRequest;
 import com.vaibhav.repos.UserRepository;
 import com.vaibhav.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -14,10 +18,15 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 @RestController
 @RequestMapping("/public")
 public class publicController {
+
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
     @Autowired
     UserDetailsService userDetailsService;
@@ -33,14 +42,23 @@ public class publicController {
     }
 
     @PostMapping("/login")
-    public User login (@RequestBody User user) {
-        if(userRepository.findByUsername(user.getUsername())!=null)
-        {
-            UserDetails a =userDetailsService.loadUserByUsername(user.getUsername());
-            return userRepository.findByUsername(a.getUsername());
+    public String login(@RequestBody LoginRequest loginRequest) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.getUsername(),
+                            loginRequest.getPassword()
+                    )
+            );
+
+            if (authentication.isAuthenticated()) {
+                return "Login successful!";
+            } else {
+                return "Invalid username or password.";
+            }
+        } catch (AuthenticationException e) {
+            return "Invalid username or password.";
         }
-        else
-            return null;
     }
 
     @GetMapping("/isLogin")

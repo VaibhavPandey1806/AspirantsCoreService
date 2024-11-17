@@ -2,12 +2,10 @@ package com.vaibhav.data.controler;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.vaibhav.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -46,14 +44,9 @@ import com.vaibhav.repos.SectionRepository;
 import com.vaibhav.repos.SourceRepository;
 import com.vaibhav.repos.TopicRepository;
 import com.vaibhav.repos.UserRepository;
-import com.vaibhav.service.CommentService;
-import com.vaibhav.service.ExcelToMongoService;
-import com.vaibhav.service.QuestionService;
-import com.vaibhav.service.ResponseService;
-import com.vaibhav.service.SectionService;
 
 @RestController
-@CrossOrigin(origins = "http://192.168.31.38:3000")
+//@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api")
 public class dataController {
 	
@@ -241,10 +234,19 @@ public class dataController {
    public Comments unlikeComment(@RequestParam String id) {
        return commentService.unlikeComment(id);
    }
-   
 
-   @PostMapping("/addResponse")
-   public String addResponseforUser(@RequestBody UserResponseDto userResponseDto) {
+
+    @GetMapping("/addResponse")
+    public String addResponse(
+            @RequestParam String userId,
+            @RequestParam int timer,
+            @RequestParam String questionId,
+            @RequestParam boolean response) {
+       UserResponseDto userResponseDto = new UserResponseDto();
+       userResponseDto.setUserId(userId);
+       userResponseDto.setTimer(timer);
+       userResponseDto.setQuestionId(questionId);
+       userResponseDto.setResponse(response);
        return responseService.addResponse(userResponseDto);
    }
    
@@ -308,24 +310,64 @@ public class dataController {
 // 		user.put("name",userDetails.getAttributes().get("name").toString());
  		return user;
     }
-    
-   
-   @PostMapping("/addUser")
-   public User addUser(@RequestBody User user)
-   {
-	   return  userRepository.save(user);
-   }
-   @GetMapping("/userDetails")
-   
-		public User getUser() {
-	   
-			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-			String user= authentication.getName();
 
-			return userRepository.findByUsername(user);
+
+    @GetMapping("/addUserfromWeb")
+    public User addUserFromWeb(
+            @RequestParam String name,
+            @RequestParam String username,
+            @RequestParam String password,
+            @RequestParam String mobile,
+            @RequestParam String email) {
+       User user=new User();
+       user.setName(name);
+       user.setUsername(username);
+       user.setPassword(password);
+       user.setMobile(mobile);
+       user.setEmailId(email);
+       userRepository.save(user);
+       return user;
+    }
+
+   @GetMapping("/userDetails")
+   public User getUser() {
+
+
+       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+       OAuth2User userDetails=(OAuth2User) authentication.getPrincipal();
+			String user= userDetails.getAttributes().get("email").toString();
+
+			return userRepository.findByEmailId((user)).get(0);
 			
 
 		
+   }
+
+   @GetMapping("/isUser")
+    public HashMap<String,Boolean> isUser() {
+       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+       OAuth2User userDetails=(OAuth2User) authentication.getPrincipal();
+       List<User> user=userRepository.findByEmailId((userDetails.getAttributes().get("email").toString()));
+       HashMap<String,Boolean> map=new HashMap<>();
+       if(user==null||user.isEmpty())
+       {
+    	  map.put("isUser",false);
+       }
+       else {
+           map.put("isUser",true);
+       }
+
+    	   return map;
+
+
+   }
+
+   @GetMapping("getEmail")
+    public String getEmail() {
+       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+       OAuth2User userDetails=(OAuth2User) authentication.getPrincipal();
+       String user= userDetails.getAttributes().get("email").toString();
+       return user;
    }
    
    
