@@ -12,6 +12,7 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -46,7 +47,7 @@ import com.vaibhav.repos.TopicRepository;
 import com.vaibhav.repos.UserRepository;
 
 @RestController
-@CrossOrigin(origins = "https://aspirantsclub.netlify.app")
+//@CrossOrigin(origins = "https://aspirantsclub.netlify.app")
 @RequestMapping("/api")
 public class dataController {
 	
@@ -334,10 +335,10 @@ public class dataController {
 
 
        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-       OAuth2User userDetails=(OAuth2User) authentication.getPrincipal();
-			String user= userDetails.getAttributes().get("email").toString();
+      UserDetails userDetails=(UserDetails) authentication.getPrincipal();
+      			String user= userDetails.getUsername();
 
-			return userRepository.findByEmailId((user)).get(0);
+			return userRepository.findByUsername(user);
 			
 
 		

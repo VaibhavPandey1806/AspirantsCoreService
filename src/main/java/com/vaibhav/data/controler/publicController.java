@@ -20,6 +20,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/public")
 public class publicController {
@@ -41,25 +45,25 @@ public class publicController {
         this.userRepository = userRepository;
     }
 
-    @PostMapping("/login")
-    public String login(@RequestBody LoginRequest loginRequest) {
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            loginRequest.getUsername(),
-                            loginRequest.getPassword()
-                    )
-            );
-
-            if (authentication.isAuthenticated()) {
-                return "Login successful!";
-            } else {
-                return "Invalid username or password.";
-            }
-        } catch (AuthenticationException e) {
-            return "Invalid username or password.";
-        }
-    }
+//    @GetMapping("/login")
+//    public String login(@RequestBody LoginRequest loginRequest) {
+//        try {
+//            Authentication authentication = authenticationManager.authenticate(
+//                    new UsernamePasswordAuthenticationToken(
+//                            loginRequest.getUsername(),
+//                            loginRequest.getPassword()
+//                    )
+//            );
+//
+//            if (authentication.isAuthenticated()) {
+//                return "Login successful!";
+//            } else {
+//                return "Invalid username or password.";
+//            }
+//        } catch (AuthenticationException e) {
+//            return "Invalid username or password.";
+//        }
+//    }
 
     @GetMapping("/isLogin")
     public boolean isLogin()
@@ -71,10 +75,14 @@ public class publicController {
         return isLoggedIn;
     }
 
+@GetMapping("/getUsers")
+public List<User> getUsers(){
+        return userRepository.findAll();
 
+}
 //    @GetMapping("/login")
-//    public String login(Model model) {
-//        return "login.jsp";  // returns the name of the login view
+//    public ModelAndView login(Model model) {
+//        return new ModelAndView("login");  // returns the name of the login view
 //    }
 
     @PostMapping("/addUser")
@@ -82,6 +90,22 @@ public class publicController {
     {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return  userRepository.save(user);
+    }
+
+    @PostMapping("/checkUsername")
+    public ResponseEntity<Map<String, Boolean>> checkUsername(@RequestBody Map<String, String> request) {
+        String username = request.get("username");
+        boolean available;
+                if(userRepository.findByUsername(username)!=null||username.equals("anonymousUser"))
+                    available=false;
+                else {
+                    available = true;
+                }
+
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("available", available);
+
+        return ResponseEntity.ok(response);
     }
 
 
