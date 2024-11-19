@@ -41,7 +41,7 @@ public class SpringSecurity {
 						.requestMatchers(new MvcRequestMatcher(introspector, "/css/**")).permitAll()
 					.anyRequest().authenticated())
 				.csrf(AbstractHttpConfigurer::disable)
-				.cors(Customizer.withDefaults())
+//				.cors(Customizer.withDefaults())
 				.formLogin(form -> form.loginPage("/login").loginProcessingUrl("/perform-login").defaultSuccessUrl("https://aspirantsclub.netlify.app/").permitAll())
 
 				.oauth2Login(oauth2 -> oauth2.loginPage("/oauth2Login").defaultSuccessUrl("https://aspirantsclub.netlify.app/redirect", true))
