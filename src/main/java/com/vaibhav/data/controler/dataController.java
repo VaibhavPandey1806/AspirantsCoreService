@@ -47,7 +47,7 @@ import com.vaibhav.repos.TopicRepository;
 import com.vaibhav.repos.UserRepository;
 
 @RestController
-@CrossOrigin(origins = "https://aspirantsclub.netlify.app")
+//@CrossOrigin(origins = "https://aspirantsclub.netlify.app")
 @RequestMapping("/api")
 public class dataController {
 	
