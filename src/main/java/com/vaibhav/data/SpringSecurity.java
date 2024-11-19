@@ -39,6 +39,7 @@ public class SpringSecurity {
 		return http.authorizeHttpRequests(request -> request
 						.requestMatchers(new MvcRequestMatcher(introspector, "/public/**")).permitAll()
 						.requestMatchers(new MvcRequestMatcher(introspector, "/css/**")).permitAll()
+						.requestMatchers(new MvcRequestMatcher(introspector, "/api/**")).permitAll()
 					.anyRequest().authenticated())
 				.csrf(AbstractHttpConfigurer::disable)
 //				.cors(Customizer.withDefaults())
