@@ -43,9 +43,9 @@ public class SpringSecurity {
 					.anyRequest().authenticated())
 				.csrf(AbstractHttpConfigurer::disable)
 //				.cors(Customizer.withDefaults())
-				.formLogin(form -> form.loginPage("/login").loginProcessingUrl("/perform-login").defaultSuccessUrl("https://aspirantsclub.netlify.app/").permitAll())
+				.formLogin(form -> form.loginPage("/login").loginProcessingUrl("/perform-login").defaultSuccessUrl("https://aspirantsclubfe-production-3426.up.railway.app/").permitAll())
 
-				.oauth2Login(oauth2 -> oauth2.loginPage("/oauth2Login").defaultSuccessUrl("https://aspirantsclub.netlify.app/redirect", true))
+				.oauth2Login(oauth2 -> oauth2.loginPage("/oauth2Login").defaultSuccessUrl("https://aspirantsclubfe-production-3426.up.railway.app/", true))
 				.build();
 	}
 

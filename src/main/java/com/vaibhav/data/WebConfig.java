@@ -11,7 +11,7 @@ public class WebConfig implements WebMvcConfigurer {
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/**") // Allow all paths
-				.allowedOrigins("https://aspirantsclub.netlify.app") // Specify your frontend origin
+				.allowedOrigins("https://aspirantsclubfe-production-3426.up.railway.app") // Specify your frontend origin
 				.allowedMethods("*") // Allowed methods
 				.allowedHeaders("*")  // Allow all headers
 				.allowCredentials(true); // Allow cookies and auth headers
