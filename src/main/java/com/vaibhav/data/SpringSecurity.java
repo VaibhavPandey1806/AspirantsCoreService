@@ -39,13 +39,11 @@ public class SpringSecurity {
 		return http.authorizeHttpRequests(request -> request
 						.requestMatchers(new MvcRequestMatcher(introspector, "/public/**")).permitAll()
 						.requestMatchers(new MvcRequestMatcher(introspector, "/css/**")).permitAll()
-						.requestMatchers(new MvcRequestMatcher(introspector, "/api/**")).permitAll()
 					.anyRequest().authenticated())
 				.csrf(AbstractHttpConfigurer::disable)
 //				.cors(Customizer.withDefaults())
 				.formLogin(form -> form.loginPage("/login").loginProcessingUrl("/perform-login").defaultSuccessUrl("https://aspirantsclubfe-production-3426.up.railway.app/").permitAll())
-
-				.oauth2Login(oauth2 -> oauth2.loginPage("/oauth2Login").defaultSuccessUrl("https://aspirantsclubfe-production-3426.up.railway.app/", true))
+				.oauth2Login(oauth2 -> oauth2.loginPage("/oauth2Login").defaultSuccessUrl("https://aspirantsclubfe-production-3426.up.railway.app/redirect", true))
 				.build();
 	}
 

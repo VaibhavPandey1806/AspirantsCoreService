@@ -86,11 +86,28 @@ public List<User> getUsers(){
 //    }
 
     @PostMapping("/addUser")
-    public User addUser(@RequestBody User user)
-    {
+    public ResponseEntity<?> addUser(@RequestBody User user) {
+        // Check if the username already exists
+        if (userRepository.findByUsername(user.getUsername())!=null) {
+            return ResponseEntity.badRequest().body("Username is already taken.");
+        }
+
+        // Check if the email ID already exists
+        if (userRepository.findByEmailId(user.getEmailId())!=null&& !userRepository.findByEmailId(user.getEmailId()).isEmpty()) {
+            return ResponseEntity.badRequest().body("Email ID is already registered.");
+        }
+
+        // Check if the mobile number already exists
+        if (userRepository.findbyMobile(user.getMobile())!=null&& !userRepository.findbyMobile(user.getMobile()).isEmpty()) {
+            return ResponseEntity.badRequest().body("Mobile number is already registered.");
+        }
+
+        // Encode the password and save the user
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return  userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        return ResponseEntity.ok(savedUser);
     }
+
 
     @PostMapping("/checkUsername")
     public ResponseEntity<Map<String, Boolean>> checkUsername(@RequestBody Map<String, String> request) {
