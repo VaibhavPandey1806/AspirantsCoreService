@@ -289,6 +289,7 @@ public class dataController {
        // Build the URL with the encoded prompt
        String url = UriComponentsBuilder.fromHttpUrl(AiUrl)
                .queryParam("message", prompt.toString())
+               .queryParam("Authorization", "Basic dmFpYmhhdkBwcHA3ODpwYXNzd29yZEB2YWliaGF2MTgwNg==")
                .toUriString();
 
        // Make the API call
