@@ -22,8 +22,8 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 @Configuration
 public class SpringSecurity {
 
-	@Value("app.url")
-	private String appUrl;
+	@Value("${frontend.url}")
+	private String frontendUrl;
 
 	private final UserDetailsService userDetailsService;
 	private final HandlerMappingIntrospector introspector;
@@ -42,8 +42,8 @@ public class SpringSecurity {
 					.anyRequest().authenticated())
 				.csrf(AbstractHttpConfigurer::disable)
 //				.cors(Customizer.withDefaults())
-				.formLogin(form -> form.loginPage("/login").loginProcessingUrl("/perform-login").defaultSuccessUrl("https://aspirantsclubfe-production-3426.up.railway.app/").permitAll())
-				.oauth2Login(oauth2 -> oauth2.loginPage("/oauth2Login").defaultSuccessUrl("https://aspirantsclubfe-production-3426.up.railway.app/redirect", true))
+				.formLogin(form -> form.loginPage("/login").loginProcessingUrl("/perform-login").defaultSuccessUrl(frontendUrl).permitAll())
+				.oauth2Login(oauth2 -> oauth2.loginPage("/oauth2Login").defaultSuccessUrl(frontendUrl+"/redirect", true))
 				.build();
 	}
 
