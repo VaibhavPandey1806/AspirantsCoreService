@@ -34,7 +34,10 @@ public class Comments {
     
     private List <String> likedBy;
 
-    public List<String> getLikedBy() {
+	private List <String> dislikedBy;
+
+
+	public List<String> getLikedBy() {
 		return likedBy;
 	}
 	public void setLikedBy(List<String> likedBy) {

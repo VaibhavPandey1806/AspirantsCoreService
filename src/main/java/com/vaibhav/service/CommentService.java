@@ -129,4 +129,32 @@ public class CommentService {
 		return commentRepository.save(addReply);
 	}
 
+    public Comments dislikeComment(String id) {
+		Comments a=commentRepository.findById(id).get();
+
+
+			if(a.getDislikedBy()!=null&&a.getDislikedBy().contains(userService.getUser().getId())){
+				a.setDislikes(a.getDislikes() - 1);
+				List<String> temp;
+				temp=a.getDislikedBy();
+				temp.remove(userService.getUser().getId());
+				a.setDislikedBy(temp);
+				commentRepository.save(a);
+				return a;
+			}
+		else {
+			a.setDislikes(a.getDislikes() + 1);
+			List<String> temp;
+			if (a.getDislikedBy() == null||a.getDislikedBy().size()==0) {
+				temp = new ArrayList<String>();}
+			else
+			{
+				temp=a.getDislikedBy();
+			}
+			temp.add(userService.getUser().getId());
+			a.setDislikedBy(temp);
+
+		}
+		return commentRepository.save(a);
+    }
 }

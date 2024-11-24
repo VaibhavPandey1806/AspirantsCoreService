@@ -236,6 +236,10 @@ public class dataController {
        return commentService.unlikeComment(id);
    }
 
+    @PostMapping("/dislikeComment")
+    public Comments dislikeComment(@RequestParam String id) {
+        return commentService.dislikeComment(id);
+    }
 
     @GetMapping("/addResponse")
     public String addResponse(
