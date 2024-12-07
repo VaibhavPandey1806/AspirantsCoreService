@@ -9,6 +9,7 @@ import com.vaibhav.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -101,15 +102,49 @@ public class dataController {
        return ResponseEntity.ok(questionRepository.findAll());
    }
 
-   @PostMapping("/questions")
-   public ResponseEntity<Question> addQuestion(@RequestBody Question question) {
-       // Variables to hold section, topic, and source entities
-      return questionService.addQuestion(question);
-   }
+//   @PostMapping("/addQuestion")
+//   public Question addQuestion(@RequestBody Question question) {
+//       // Variables to hold section, topic, and source entities
+//      return questionService.addQuestion(question).getBody();
+//   }
+@GetMapping("/addQuestion")
+public ResponseEntity<Question> addQuestion(
+        @RequestParam(required = false) String sectionId,
+        @RequestParam (required = false) String section,
+        @RequestParam(required = false) String topicId,
+        @RequestParam (required = false) String topic,
+        @RequestParam(required = false) String sourceId,
+        @RequestParam (required = false) String source,
+        @RequestParam String questionText,
+        @RequestParam String optionA,
+        @RequestParam String optionB,
+        @RequestParam String optionC,
+        @RequestParam String optionD,
+        @RequestParam String correctAnswer) {
+
+    // Create a Question object from the parameters
+    Question question = new Question();
+    question.setSectionId(sectionId);
+    question.setSection(section);
+    question.setTopicId(topicId);
+    question.setTopic(topic);
+    question.setSourceId(sourceId);
+    question.setSource(source);
+    question.setQuestionText(questionText);
+    question.setOptionA(optionA);
+    question.setOptionB(optionB);
+    question.setOptionC(optionC);
+    question.setOptionD(optionD);
+    question.setCorrectAnswer(correctAnswer);
+    // Save the question using the service layer
+    return questionService.addQuestion(question);
+}
 
 
-   
-   
+
+
+
+
 //   @GetMapping("/questionsbyCategory")
 //   public List<Question> getQuestionsByCategory(@RequestParam String category) {
 //       return questionRepository.findByCategory(category); // Make sure this method is implemented in your repository
