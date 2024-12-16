@@ -82,7 +82,7 @@ public class ExcelToMongoService {
                 question.setOptionD(getCellValue(row, 7));
                 question.setCorrectAnswer(getCellValue(row, 8));
                 question.setDateTimeSubmitted(LocalDateTime.now());
-                question.setSubmittedBy(userService.getUser().getId());
+                question.setSubmittedBy("6740d6fb5343bb476c3b914e");
 
                 // Save the question
                 questionRepository.save(question);

@@ -4,6 +4,7 @@ package com.vaibhav.data.controler;
 import com.vaibhav.data.dao.User;
 import com.vaibhav.data.dto.LoginRequest;
 import com.vaibhav.repos.UserRepository;
+import com.vaibhav.service.ExcelToMongoService;
 import com.vaibhav.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +19,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +37,12 @@ public class publicController {
 
     @Autowired
     UserDetailsService userDetailsService;
+
+
+
+    @Autowired
+    private ExcelToMongoService excelToMongoService;
+
 
     public static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -75,6 +84,17 @@ public class publicController {
         return isLoggedIn;
     }
 
+    @PostMapping("/import-excel")
+    public String importExcel(@RequestParam("file") MultipartFile file) {
+        try {
+            excelToMongoService.importExcelData(file);
+            return "Data Imported Successfully!";
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Failed to import data: " + e.getMessage();
+        }
+    }
+
 @GetMapping("/getUsers")
 public List<User> getUsers(){
         return userRepository.findAll();
@@ -104,9 +124,23 @@ public List<User> getUsers(){
 
         // Encode the password and save the user
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRole("USER");
         User savedUser = userRepository.save(user);
         return ResponseEntity.ok(savedUser);
     }
+
+
+//    @GetMapping("testUsers")
+//    public String testUsers() {
+//
+//        List<User> users = userRepository.findAll();
+//        for (User user : users) {
+//            User a =user;
+//            a.setRole("user");
+//            userRepository.save(a);
+//        }
+//        return "Success";
+//    }
 
 
     @PostMapping("/checkUsername")

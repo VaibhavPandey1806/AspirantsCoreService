@@ -13,7 +13,8 @@ import com.vaibhav.data.dao.UserResponses;
 public interface UserResponsesRepository extends MongoRepository<UserResponses, String>
 {
 
-	
+
+	@Query("{ 'userid':?0}")
 	 List<UserResponses> findByUserid(String userid);
 //	UserResponses findbyuserid(String userId);
 

@@ -1,6 +1,7 @@
 package com.vaibhav.repos;
 
 import com.vaibhav.data.dao.Question;
+import com.vaibhav.data.dao.QuestionPending;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
@@ -26,4 +27,7 @@ public interface QuestionRepository extends MongoRepository<Question, String> {
 
     @Query("{ 'sectionId': { $in: ?0 }, 'topicId': { $in: ?1 },'SourceId': { $in: ?2 } }")
 	List<Question> findByFilters(List<String> category, List<String> topic, List<String> source);
+
+    @Query("{ 'submittedBy':userId}")
+    List<Question> findbyUserId(String userId);
 }

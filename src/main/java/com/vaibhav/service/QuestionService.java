@@ -1,19 +1,12 @@
 package com.vaibhav.service;
 
 
+import com.vaibhav.data.dao.*;
+import com.vaibhav.repos.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
-
-import com.vaibhav.data.dao.Question;
-import com.vaibhav.data.dao.Section;
-import com.vaibhav.data.dao.Source;
-import com.vaibhav.data.dao.Topic;
-import com.vaibhav.repos.QuestionRepository;
-import com.vaibhav.repos.SectionRepository;
-import com.vaibhav.repos.SourceRepository;
-import com.vaibhav.repos.TopicRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,6 +16,10 @@ public class QuestionService {
 
     @Autowired
     private QuestionRepository questionRepository;
+
+
+    @Autowired
+    private QuestionPendingRepository questionPendingRepository;
     @Autowired
     private SourceRepository sourceRepository;
     @Autowired
@@ -40,7 +37,7 @@ public class QuestionService {
     }
     
     
-    public ResponseEntity<Question> addQuestion(Question question) {
+    public ResponseEntity<QuestionPending> addQuestion(QuestionPending question) {
         // Variables to hold section, topic, and source entities
         Section section = null;
         Topic topic = null;
@@ -92,9 +89,11 @@ public class QuestionService {
         // Set additional question details
         question.setDateTimeSubmitted(LocalDateTime.now());
         question.setSubmittedBy(userService.getUser().getId());
+        question.setApproved(false);
+        question.setRejected(false);
 
         // Step 4: Save the question with the updated references
-        Question savedQuestion = questionRepository.save(question);
+        QuestionPending savedQuestion = questionPendingRepository.save(question);
 
         return ResponseEntity.ok(savedQuestion);
     }

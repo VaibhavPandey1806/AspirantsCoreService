@@ -38,6 +38,7 @@ public class SpringSecurity {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		return http.authorizeHttpRequests(request -> request
 						.requestMatchers(new MvcRequestMatcher(introspector, "/public/**")).permitAll()
+						.requestMatchers(new MvcRequestMatcher(introspector, "/error/**")).permitAll()
 						.requestMatchers(new MvcRequestMatcher(introspector, "/css/**")).permitAll()
 					.anyRequest().authenticated())
 				.csrf(AbstractHttpConfigurer::disable)

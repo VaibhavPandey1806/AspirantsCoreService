@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.vaibhav.data.dao.*;
+import com.vaibhav.repos.*;
 import com.vaibhav.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,21 +33,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.vaibhav.data.dao.Section;
-import com.vaibhav.data.dao.Source;
-import com.vaibhav.data.dao.Comments;
-import com.vaibhav.data.dao.Question;
-import com.vaibhav.data.dao.Responses;
-import com.vaibhav.data.dao.Section;
-import com.vaibhav.data.dao.Topic;
-import com.vaibhav.data.dao.User;
-import com.vaibhav.data.dao.UserResponses;
 import com.vaibhav.data.dto.UserResponseDto;
-import com.vaibhav.repos.CommentRepository;
-import com.vaibhav.repos.QuestionRepository;
-import com.vaibhav.repos.SectionRepository;
-import com.vaibhav.repos.SourceRepository;
-import com.vaibhav.repos.TopicRepository;
-import com.vaibhav.repos.UserRepository;
 
 @RestController
 //@CrossOrigin(origins = "https://aspirantsclub.netlify.app")
@@ -53,8 +41,12 @@ import com.vaibhav.repos.UserRepository;
 public class dataController {
 	
 	 private final RestTemplate restTemplate;
+    @Autowired
+    private QuestionPendingRepository questionPendingRepository;
+    @Autowired
+    private UserResponsesRepository userResponsesRepository;
 
-	    public dataController(RestTemplateBuilder restTemplateBuilder) {
+    public dataController(RestTemplateBuilder restTemplateBuilder) {
 	        this.restTemplate = restTemplateBuilder.build();
 	    }
 	
@@ -108,7 +100,7 @@ public class dataController {
 //      return questionService.addQuestion(question).getBody();
 //   }
 @GetMapping("/addQuestion")
-public ResponseEntity<Question> addQuestion(
+public ResponseEntity<QuestionPending> addQuestion(
         @RequestParam(required = false) String sectionId,
         @RequestParam (required = false) String section,
         @RequestParam(required = false) String topicId,
@@ -123,7 +115,7 @@ public ResponseEntity<Question> addQuestion(
         @RequestParam String correctAnswer) {
 
     // Create a Question object from the parameters
-    Question question = new Question();
+    QuestionPending question = new QuestionPending();
     question.setSectionId(sectionId);
     question.setSection(section);
     question.setTopicId(topicId);
@@ -410,6 +402,76 @@ public ResponseEntity<Question> addQuestion(
        String user= userDetails.getAttributes().get("email").toString();
        return user;
    }
+
+   @GetMapping("getPendingQuestions")
+           public ResponseEntity<List<QuestionPending>> getPendingQuestions()
+   {
+       if(getUser().getRole().equalsIgnoreCase("admin")) {
+           return ResponseEntity.ok(questionPendingRepository.findNotApproved());
+       }
+
+       return ResponseEntity.badRequest().build();
+
+   }
+
+   @GetMapping("approveQuestion")
+    public ResponseEntity<String> approveQuestion(@RequestParam String id) {
+       if(getUser().getRole().equalsIgnoreCase("admin")) {
+           QuestionPending pending=questionPendingRepository.findById(id).get();
+           Question question = new Question();
+           question.setId(pending.getId());
+           question.setSectionId(pending.getSectionId());
+           question.setSection(pending.getSection());
+           question.setTopicId(pending.getTopicId());
+           question.setTopic(pending.getTopic());
+           question.setSource(pending.getSource());
+           question.setSourceId(pending.getSourceId());
+           question.setQuestionText(pending.getQuestionText());
+           question.setOptionA(pending.getOptionA());
+           question.setOptionB(pending.getOptionB());
+           question.setOptionC(pending.getOptionC());
+           question.setOptionD(pending.getOptionD());
+           question.setCorrectAnswer(pending.getCorrectAnswer());
+           question.setSubmittedBy(pending.getSubmittedBy());
+           question.setComments(pending.getComments());
+           question.setDateTimeSubmitted(pending.getDateTimeSubmitted());
+
+           questionRepository.save(question);
+           return ResponseEntity.ok("Approved");
+       }
+       return ResponseEntity.badRequest().build();
+   }
+
+    @GetMapping("rejectQuestion")
+    public ResponseEntity<String> rejectQuestion(@RequestParam String id) {
+        if(getUser().getRole().equalsIgnoreCase("admin")) {
+            QuestionPending pending=questionPendingRepository.findById(id).get();
+           pending.setRejected(true);
+            return ResponseEntity.ok("Rejected");
+        }
+        return ResponseEntity.badRequest().build();
+    }
+   @GetMapping("getSubmittedQuestions")
+   public ResponseEntity<List<QuestionPending>> getSubmittedQuestions() {
+       {
+           List<QuestionPending> pending=questionPendingRepository.findbyUserId(getUser().getId());
+           return ResponseEntity.ok(pending);
+       }
+   }
+   @GetMapping("getSubmittedBy")
+    public int getSubmittedBy()
+   {
+       List<Question> submittedBy=questionRepository.findbyUserId(getUser().getId());
+       return submittedBy.size();
+   }
+
+    @GetMapping("getAnswered")
+    public int getAnsweredBy()
+    {
+        List<UserResponses> answeredBy=userResponsesRepository.findByUserid(getUser().getId());
+        return answeredBy.size();
+    }
+
    
    
 }
