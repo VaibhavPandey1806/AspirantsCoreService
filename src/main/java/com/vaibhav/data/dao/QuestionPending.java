@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Document(collection = "questions")
+@Document(collection = "questionsPending")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
