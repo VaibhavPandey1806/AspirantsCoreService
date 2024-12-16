@@ -418,6 +418,7 @@ public ResponseEntity<QuestionPending> addQuestion(
     public ResponseEntity<String> approveQuestion(@RequestParam String id) {
        if(getUser().getRole().equalsIgnoreCase("admin")) {
            QuestionPending pending=questionPendingRepository.findById(id).get();
+           pending.setApproved(true);
            Question question = new Question();
            question.setId(pending.getId());
            question.setSectionId(pending.getSectionId());
@@ -435,7 +436,7 @@ public ResponseEntity<QuestionPending> addQuestion(
            question.setSubmittedBy(pending.getSubmittedBy());
            question.setComments(pending.getComments());
            question.setDateTimeSubmitted(pending.getDateTimeSubmitted());
-
+           questionPendingRepository.save(pending);
            questionRepository.save(question);
            return ResponseEntity.ok("Approved");
        }
@@ -447,6 +448,7 @@ public ResponseEntity<QuestionPending> addQuestion(
         if(getUser().getRole().equalsIgnoreCase("admin")) {
             QuestionPending pending=questionPendingRepository.findById(id).get();
            pending.setRejected(true);
+           questionPendingRepository.save(pending);
             return ResponseEntity.ok("Rejected");
         }
         return ResponseEntity.badRequest().build();
