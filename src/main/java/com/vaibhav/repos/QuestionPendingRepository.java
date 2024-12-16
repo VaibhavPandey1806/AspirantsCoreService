@@ -32,6 +32,6 @@ public interface QuestionPendingRepository extends MongoRepository<QuestionPendi
     List<QuestionPending> findNotApproved();
 
 
-    @Query("{ 'submittedBy':userId}")
+    @Query("{ 'submittedBy':?0}")
     List<QuestionPending> findbyUserId(String userId);
 }
